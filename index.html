@@ -1,0 +1,220 @@
+<!DOCTYPE html><html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X7 CARGO - Проверка трек-кодов</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 600;
+      background-color: #fff5f5;
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    header, main, #result, .tracker-form, #audioToggle {
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    header {
+      padding: 10px 20px;
+      width: 100%;
+    }
+    header img {
+      width: 120px;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: 2em;
+      margin: 10px 0;
+      color: #000;
+    }
+    .marquee {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      padding: 5px 0;
+    }
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 30s linear infinite;
+      color: #000;
+      font-size: 0.9em;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      width: 100%;
+    }
+    p {
+      font-size: 1em;
+      margin: 20px 4mm 10px;
+      color: #000;
+    }
+    .tracker-form {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    input[type="text"] {
+      padding: 10px;
+      border: 2px solid #000;
+      border-radius: 8px;
+      width: 220px;
+      font-size: 1em;
+      background-color: #fbeaea;
+      color: #000;
+      text-align: center;
+    }
+    button {
+      padding: 10px 18px;
+      background-color: #000;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background-color: #333;
+    }
+    #result {
+      font-size: 1.1em;
+      margin-top: 20px;
+      padding: 0 4mm;
+      white-space: pre-line;
+      opacity: 0;
+      transition: opacity 0.3s ease-in;
+    }
+    #result.visible {
+      opacity: 1;
+      animation: fadeIn 0.3s ease-in;
+    }
+    #result.success {
+      color: #228B22; /* темно-зеленый, на 40% темнее */
+    }
+    #result.error {
+      color: #000;
+    }
+    #audioToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 10px;
+      background-color: #000;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    #audioToggle:hover {
+      background-color: #333;
+    }@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5em;
+  }
+  input[type="text"] {
+    width: 100%;
+  }
+  .tracker-form {
+    flex-direction: column;
+    align-items: center;
+  }
+  .marquee span {
+    font-size: 0.8em;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <audio id="bgAudio" src="bg_audio.mp3" autoplay loop></audio>  <header>
+    <img src="logo.png" alt="X7 Cargo Logo">
+    <h1>X7 CARGO</h1>
+    <div class="marquee">
+      <span>Вас приветствует X7 Cargo. Проверьте наличие прибытия ваших товаров на нашем складе. При возникновении любых вопросов обратитесь в администрацию.        Фоновая музыка - East Duo - Topic - ჩუბინა</span>
+    </div>
+  </header>  <main>
+    <p>Введите трек-код товара на наличие прибытия на склад:</p>
+    <div class="tracker-form">
+      <input type="text" id="trackInput" placeholder="Трек-код">
+      <button onclick="checkTrackCode()">Проверить</button>
+    </div>
+    <div id="result"></div>
+  </main><button id="audioToggle" onclick="toggleAudio()">🔊 Звук ВКЛ</button>
+
+  <script src="codes.js"></script>  <script>
+    const input = document.getElementById('trackInput');
+    const resultDiv = document.getElementById('result');
+    const bgAudio = document.getElementById('bgAudio');
+    const audioToggle = document.getElementById('audioToggle');
+
+    function checkTrackCode() {
+      const code = input.value.trim();
+      resultDiv.classList.remove('visible', 'success', 'error');
+
+      if (!code) {
+        resultDiv.textContent = 'Пожалуйста, введите трек-код.';
+        resultDiv.classList.add('visible', 'error');
+        return;
+      }
+
+      const entry = trackCodes.find(item => item.code === code);
+      if (entry) {
+        const date = new Date(entry.date);
+        const formattedDate = date.toLocaleDateString('ru-RU');
+        resultDiv.textContent = `Товар по треккоду: ${code} 🧾\nПрибыл на склад : ${formattedDate} ✅`;
+        resultDiv.classList.add('visible', 'success');
+      } else {
+        resultDiv.textContent = 'Товар по такому треккоду ещё не прибыл на наш склад❌';
+        resultDiv.classList.add('visible', 'error');
+      }
+    }
+
+    function toggleAudio() {
+      if (bgAudio.paused) {
+        bgAudio.play();
+        audioToggle.textContent = '🔊 Звук ВКЛ';
+      } else {
+        bgAudio.pause();
+        audioToggle.textContent = '🔇 Звук ВЫКЛ';
+      }
+    }
+
+    window.addEventListener('load', () => {
+      bgAudio.play().catch(() => {
+        console.log("Автовоспроизведение блокировано браузером.");
+      });
+    });
+  </script></body>
+</html>
