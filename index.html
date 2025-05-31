@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>X7 CARGO - Проверка трек-кодов</title>
+  <title>X7 CARGO</title>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600&display=swap" rel="stylesheet">
   <style>
     * {
@@ -21,7 +21,7 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-    header, main, #result, .tracker-form, #audioToggle {
+    header, main, #result, .tracker-form {
       animation: fadeIn 0.3s ease-in;
     }
     @keyframes fadeIn {
@@ -33,7 +33,7 @@
       width: 100%;
     }
     header img {
-      width: 120px;
+      width: 162px;
       margin-bottom: 10px;
     }
     h1 {
@@ -53,7 +53,7 @@
     .marquee span {
       display: inline-block;
       padding-left: 100%;
-      animation: marquee 30s linear infinite;
+      animation: marquee 22.5s linear infinite;
       color: #000;
       font-size: 0.9em;
     }
@@ -117,28 +117,10 @@
       animation: fadeIn 0.3s ease-in;
     }
     #result.success {
-      color: #228B22; /* темно-зеленый, на 40% темнее */
+      color: #175c17;
     }
     #result.error {
       color: #000;
-    }
-    #audioToggle {
-      position: fixed;
-      bottom: 20px;
-      right: 10px;
-      background-color: #000;
-      color: #fff;
-      border: none;
-      border-radius: 50px;
-      padding: 10px 20px;
-      font-size: 1em;
-      cursor: pointer;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      transition: all 0.3s ease;
-      z-index: 1000;
-    }
-    #audioToggle:hover {
-      background-color: #333;
     }@media (max-width: 600px) {
   h1 {
     font-size: 1.5em;
@@ -158,7 +140,7 @@
   </style>
 </head>
 <body>
-  <audio id="bgAudio" src="bg_audio.mp3" autoplay loop></audio>  <header>
+  <header>
     <img src="logo.png" alt="X7 Cargo Logo">
     <h1>X7 CARGO</h1>
     <div class="marquee">
@@ -171,13 +153,9 @@
       <button onclick="checkTrackCode()">Проверить</button>
     </div>
     <div id="result"></div>
-  </main><button id="audioToggle" onclick="toggleAudio()">🔊 Звук ВКЛ</button>
-
-  <script src="codes.js"></script>  <script>
+  </main>  <script src="codes.js"></script>  <script>
     const input = document.getElementById('trackInput');
     const resultDiv = document.getElementById('result');
-    const bgAudio = document.getElementById('bgAudio');
-    const audioToggle = document.getElementById('audioToggle');
 
     function checkTrackCode() {
       const code = input.value.trim();
@@ -200,21 +178,5 @@
         resultDiv.classList.add('visible', 'error');
       }
     }
-
-    function toggleAudio() {
-      if (bgAudio.paused) {
-        bgAudio.play();
-        audioToggle.textContent = '🔊 Звук ВКЛ';
-      } else {
-        bgAudio.pause();
-        audioToggle.textContent = '🔇 Звук ВЫКЛ';
-      }
-    }
-
-    window.addEventListener('load', () => {
-      bgAudio.play().catch(() => {
-        console.log("Автовоспроизведение блокировано браузером.");
-      });
-    });
   </script></body>
 </html>
